@@ -36,6 +36,9 @@
           },
           {
             "path": "System/Serial.c"
+          },
+          {
+            "path": "System/TIM.c"
           }
         ],
         "folders": []
