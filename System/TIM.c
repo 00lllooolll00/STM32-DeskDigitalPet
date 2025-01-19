@@ -8,7 +8,7 @@
  * @brief 定时器PWM模式初始化
  * 
  */
-void TIM_Init(void)
+void PWM_Init(void)
 {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);
@@ -67,53 +67,51 @@ void TIM_Init(void)
 }
 
 /**
- * @brief 设置左前腿姿态
+ * @brief TIM2 OC1占空比
  * 
- * @param Compare 姿态值
+ * @param Duty 占空比
  */
-void Set_LFLeg(uint16_t Compare)
+void Set_TIM2CCR1(uint16_t Duty)
 {
-    TIM_SetCompare1(TIM2,Compare);
+    TIM_SetCompare1(TIM2,Duty);
 }
 
 /**
- * @brief 设置右前腿姿态
+ * @brief TIM2 OC2占空比
  * 
- * @param Compare 姿态值
+ * @param Duty 占空比
  */
-void Set_LRLeg(uint16_t Compare)
+void Set_TIM2CCR2(uint16_t Duty)
 {
-    TIM_SetCompare2(TIM2,Compare);
+    TIM_SetCompare2(TIM2,Duty);
 }
 
 /**
- * @brief 设置左后腿姿态
+ * @brief TIM2 OC3占空比
  * 
- * @param Compare 姿态值
+ * @param Duty 占空比
  */
-
-void Set_HLLeg(uint16_t Compare)
+void Set_TIM2CCR3(uint16_t Duty)
 {
-    TIM_SetCompare3(TIM2,Compare);
+    TIM_SetCompare3(TIM2,Duty);
 }
 
 /**
- * @brief 设置右后腿姿态
+ * @brief TIM2 OC4占空比
  * 
- * @param Compare 姿态值
+ * @param Duty 占空比
  */
-
-void Set_HRLeg(uint16_t Compare)
+void Set_TIM2CCR4(uint16_t Duty)
 {
-    TIM_SetCompare4(TIM2,Compare);
+    TIM_SetCompare4(TIM2,Duty);
 }
 
 /**
- * @brief 设置尾巴摇动
+ * @brief TIM1 OC1占空比
  * 
- * @param Compare 姿态值
+ * @param Duty 占空比
  */
-void Ser_Tail(uint16_t Compare)
+void Set_TIM3CCR(uint16_t Duty)
 {
-
+    TIM_SetCompare1(TIM3,Duty);
 }
