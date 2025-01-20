@@ -161,7 +161,13 @@ void TIM4_IRQHandler(void)
 			Error_Counter = 0;
 		}
 
-
+		/*舵机*/
+		System_Tick ++;//系统时间++
+		for(uint8_t i = 0;i < MaxDelayTasks;i ++)//判断当前延时任务是否结束
+		{
+			Def_TaskState(&delay[i]);
+		}
+		
 		TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
 	}
 }

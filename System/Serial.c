@@ -166,7 +166,7 @@ void USART1_IRQHandler(void)
                 }
                 else
                 {
-                   ErrorFlag == isError;
+                   ErrorFlag = isError;
                    if(TimeOut_Flag == OverTime)
                    {
                         TimeOut_Flag = NotOverTime;
@@ -225,7 +225,7 @@ void USART3_IRQHandler(void)
                 }
                 else
                 {
-                   ErrorFlag == isError;
+                   ErrorFlag = isError;
                    if(TimeOut_Flag == OverTime)
                    {
                         TimeOut_Flag = NotOverTime;
