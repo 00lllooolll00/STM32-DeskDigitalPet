@@ -11,25 +11,30 @@ Receive_Flag Serial_RxFlag = NotFinish;//串口模块是否接收完成
 
 Serial_State Receive_State = State_Wait_Head;//串口接收的状态
 
+ErrorType ErrorFlag = notError;//串口接收出错标志位
+Timeout TimeOut_Flag = NotOverTime;//超时标志位
+
 uint8_t RxDataPack[3];//串口接收到的数据包
 
-uint8_t Inst_WakeUp[3] = {0x00,0x00,0x00};//唤醒指令
-uint8_t Inst_Forward[3] = {0xAA,0xAB,0xAC};//前进指令
-uint8_t Inst_Backward[3] = {0xBA,0xBB,0xBC};//后退指令
-uint8_t Inst_TurnLeft[3] = {0xCA,0xCB,0xCC};//左转指令
-uint8_t Inst_TurnRight[3] = {0xDA,0xDB,0xDC};//右转指令
-uint8_t Inst_Swing[3] = {0xEA,0xEB,0xEC};//摇摆指令
-uint8_t Inst_LieDown[3] = {0xFA,0xFB,0xFC};//趴下指令
-uint8_t Inst_SitDown[3] = {0x0A,0x0B,0x0C};//蹲下指令
-uint8_t Inst_TailWag[3] = {0x1A,0x1B,0x1C};//摇尾巴指令
-uint8_t Inst_Sleep[3] = {0x2A,0x2B,0x2C};//睡眠指令
-uint8_t Inst_SwingFast[3] = {0x3A,0x3B,0x3C};//快速摇摆指令
-uint8_t Inst_Woof[3] = {0x4A,0x4B,0x4C};//叫两声指令
-uint8_t Inst_StandUp[3] = {0x5A,0x5B,0x5C};//立正指令
-uint8_t Inst_JumpForward[3] = {0x6A,0x6B,0x6C};//向前跳指令
-uint8_t Inst_JumpBackward[3] = {0x7A,0x7B,0x7C};//向后跳指令、
+const uint8_t Inst_WakeUp[3] = {0x00,0x00,0x00};//唤醒指令
+const uint8_t Inst_Forward[3] = {0xAA,0xAB,0xAC};//前进指令
+const uint8_t Inst_Backward[3] = {0xBA,0xBB,0xBC};//后退指令
+const uint8_t Inst_TurnLeft[3] = {0xCA,0xCB,0xCC};//左转指令
+const uint8_t Inst_TurnRight[3] = {0xDA,0xDB,0xDC};//右转指令
+const uint8_t Inst_Swing[3] = {0xEA,0xEB,0xEC};//摇摆指令
+const uint8_t Inst_LieDown[3] = {0xFA,0xFB,0xFC};//趴下指令
+const uint8_t Inst_SitDown[3] = {0x0A,0x0B,0x0C};//蹲下指令
+const uint8_t Inst_TailWag[3] = {0x1A,0x1B,0x1C};//摇尾巴指令
+const uint8_t Inst_Sleep[3] = {0x2A,0x2B,0x2C};//睡眠指令
+const uint8_t Inst_SwingFast[3] = {0x3A,0x3B,0x3C};//快速摇摆指令
+const uint8_t Inst_Woof[3] = {0x4A,0x4B,0x4C};//叫两声指令
+const uint8_t Inst_StandUp[3] = {0x5A,0x5B,0x5C};//立正指令
+const uint8_t Inst_JumpForward[3] = {0x6A,0x6B,0x6C};//向前跳指令
+const uint8_t Inst_JumpBackward[3] = {0x7A,0x7B,0x7C};//向后跳指令
 
-uint8_t *Inst_Lst[15] = {
+const uint8_t Inst_SleepDown[3] = {0xF1,0xF2,0xF3};//主动进入睡眠模式
+
+const uint8_t *Inst_Lst[15] = {
     Inst_WakeUp,Inst_Forward,Inst_Backward,
     Inst_TurnLeft,Inst_TurnRight,Inst_Swing,
     Inst_LieDown,Inst_SitDown,Inst_TailWag,
@@ -135,10 +140,6 @@ void USART1_IRQHandler(void)
                 {
                     Receive_State = State_Receive_Data;
                 }
-                else
-                {
-                    Receive_State = State_Wait_Head;
-                }
             break;
 
             case State_Receive_Data:
@@ -155,10 +156,26 @@ void USART1_IRQHandler(void)
                 {
                     Receive_State = State_Wait_Head;
                     Serial_RxFlag = Finish;
+                    if(ErrorFlag == isError)
+                    {
+                        TimeOut_Flag = NotOverTime;
+                        ErrorFlag = notError;
+                        Receive_State = State_Wait_Head;
+                        Serial_RxFlag = Finish;
+                    }
                 }
                 else
                 {
-                    Receive_State = State_Waite_End;
+                   ErrorFlag == isError;
+                   if(TimeOut_Flag == OverTime)
+                   {
+                        TimeOut_Flag = NotOverTime;
+                        ErrorFlag = notError;
+                        Receive_State = State_Wait_Head;
+                        Serial_RxFlag = Finish;
+                        return;
+                   }
+
                 }
             break;
         }
@@ -182,10 +199,6 @@ void USART3_IRQHandler(void)
                 {
                     Receive_State = State_Receive_Data;
                 }
-                else
-                {
-                    Receive_State = State_Wait_Head;
-                }
             break;
 
             case State_Receive_Data:
@@ -202,10 +215,25 @@ void USART3_IRQHandler(void)
                 {
                     Receive_State = State_Wait_Head;
                     Serial_RxFlag = Finish;
+                    if(ErrorFlag == isError)
+                    {
+                        TimeOut_Flag = NotOverTime;
+                        ErrorFlag = notError;
+                        Receive_State = State_Wait_Head;
+                        Serial_RxFlag = Finish;
+                    }
                 }
                 else
                 {
-                    Receive_State = State_Waite_End;
+                   ErrorFlag == isError;
+                   if(TimeOut_Flag == OverTime)
+                   {
+                        TimeOut_Flag = NotOverTime;
+                        ErrorFlag = notError;
+                        Receive_State = State_Wait_Head;
+                        Serial_RxFlag = Finish;
+                        return;
+                   }
                 }
             break;
         }
@@ -232,4 +260,32 @@ Inst Def_ActMode(void)
         }
         return (Inst)j;
     }
+}
+
+/**
+ * @brief 发送一个字节给语音模块
+ * 
+ * @param Byte 字节数据
+ */
+void Voice_SendByte(uint8_t Byte)
+{
+    USART_SendData(USART1,Byte);
+    while(USART_GetFlagStatus(USART1,USART_FLAG_TXE) != SET);
+}
+
+/**
+ * @brief 发送一个数据包给语音模块
+ * 
+ * @param DataPack 数据包数组
+ */
+void Voice_SendDataPack(const uint8_t *DataPack)
+{
+    Voice_SendByte(0xAA);
+    Voice_SendByte(0x55);
+    for(uint8_t i = 0;i < 3;i ++)
+    {
+        Voice_SendByte(DataPack[i]);
+    }
+    Voice_SendByte(0x55);
+    Voice_SendByte(0xAA);
 }

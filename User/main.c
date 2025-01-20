@@ -5,6 +5,9 @@
 #include "TIM.h"
 
 uint8_t ActC_Slow;//动作配置函数减速
+uint16_t inSleep_Counter = 0;//进入睡眠计数
+uint16_t Error_Counter = 0;//串口超时计数
+
 
 /**
  * @brief 动作配置函数
@@ -92,6 +95,9 @@ void ActionConfig(void)
 
 				Emoji_Turn(Emoji_Grinning);				
 			break;
+
+			default:
+			break;
 		}
 	}
 	Serial_RxFlag = NotFinish;
@@ -110,6 +116,13 @@ int main(void)
 	{
 		ActionConfig();
 
+		if(inSleep_Counter >= 60000)//1分钟没有收到消息则自动进入睡眠模式
+		{
+			inSleep_Counter = 0;//计数器清空
+			Emoji_Turn(Emoji_Sleep);//切换表情
+			Voice_SendDataPack(Inst_SleepDown);//向语音模块发送数据包告诉进入睡眠模式
+			__WFI();
+		}
 	}
 }
 /******************************************主函数*/
@@ -119,7 +132,35 @@ void TIM4_IRQHandler(void)
 {
 	if(TIM_GetITStatus(TIM4,TIM_IT_Update) == SET)
 	{
+		/*程序减速*/
 		if( ++ActC_Slow == 10)ActC_Slow = 0;
+
+		/*睡眠模式进入*/
+		if(Serial_RxFlag == NotFinish)//如果没接收到串口指令则开始计时
+		{
+			if( ++inSleep_Counter == 65534)
+			{
+				inSleep_Counter = 0;
+			}
+		}
+		else
+		{
+			inSleep_Counter = 0;
+		}
+
+		/*串口接收超时*/
+		if(ErrorFlag == isError)
+		{
+			if( ++Error_Counter == 500)
+			{
+				TimeOut_Flag = OverTime;
+			}
+		}
+		else
+		{
+			Error_Counter = 0;
+		}
+
 
 		TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
 	}

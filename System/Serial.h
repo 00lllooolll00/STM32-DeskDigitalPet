@@ -37,16 +37,35 @@ typedef enum
     Woof,
     StandUp,
     JumpForward,
-    JumpBackward
+    JumpBackward,
+    SleepDown
 }Inst;
+
+typedef enum
+{
+    OverTime,
+    NotOverTime
+}Timeout;
+
+typedef enum
+{
+    isError,
+    notError
+}ErrorType;
 
 extern Receive_Flag Serial_RxFlag ;//串口模块是否接收完成
  
 extern uint8_t RxDataPack[];//串口接收到的数据包
 
+extern const uint8_t Inst_SleepDown[];//主动进入睡眠模式
+
+ErrorType ErrorFlag;//串口接收出错标志位
+Timeout TimeOut_Flag;//超时标志位
+
+
 void Voice_Init(void);
 void BlueTooth_Init(void);
 Inst Def_ActMode(void);
-
+void Voice_SendDataPack(const uint8_t *DataPack);
 
 #endif
