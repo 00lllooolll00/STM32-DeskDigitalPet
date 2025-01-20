@@ -11,6 +11,7 @@ void Servo_Init(void)
     Set_LRLeg(0);
     Set_HLLeg(0);
     Set_HRLeg(0);
+    Set_Tail(0);
 }
 
 /**
@@ -58,7 +59,7 @@ void Set_HRLeg(float Angle)
  * 
  * @param Angle 角度
  */
-void Ser_Tail(float Angle)
+void Set_Tail(float Angle)
 {
     Set_TIM3CCR(Angle / 180 * 2000 + 500);
 }

@@ -19,15 +19,34 @@ typedef enum
 {
     NotFinish,
     Finish
-}Receive_State;
+}Receive_Flag;
 
-extern Receive_State Voice_RxFlag ;//语音模块是否接收完成
-extern Receive_State BlueTooth_RxFlag ;//蓝牙模块是否接收完成
+typedef enum
+{
+    WakeUp,
+    Forward,
+    BackWard,
+    TurnLeft,
+    TurnRight,
+    Swing,
+    LieDown,
+    SitDown,
+    TailWag,
+    Sleep,
+    SwingFast,
+    Woof,
+    StandUp,
+    JumpForward,
+    JumpBackward
+}Inst;
+
+extern Receive_Flag Serial_RxFlag ;//串口模块是否接收完成
  
-extern uint8_t Voice_RxDataPack[];//语音接收到的数据包
-extern uint8_t BlueTooth_RxDataPack[];//蓝牙接收到的数据包
+extern uint8_t RxDataPack[];//串口接收到的数据包
 
 void Voice_Init(void);
 void BlueTooth_Init(void);
+Inst Def_ActMode(void);
+
 
 #endif

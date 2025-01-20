@@ -40,6 +40,9 @@ extern const uint8_t Emoji_Kiss[];
 extern const uint8_t Emoji_Laugh[];
 extern const uint8_t Emoji_Normal[];
 extern const uint8_t Emoji_Scared[];
+extern const uint8_t Emoji_Sleep[];
+extern const uint8_t Emoji_Angry[];
+extern const uint8_t Emoji_Grinning[];
 /*按照上面的格式，在这个位置加入新的图像数据声明*/
 //...
 

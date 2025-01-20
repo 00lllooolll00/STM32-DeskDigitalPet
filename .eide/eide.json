@@ -27,6 +27,12 @@
           },
           {
             "path": "Driver/Servo.c"
+          },
+          {
+            "path": "Driver/Action.c"
+          },
+          {
+            "path": "Driver/Emoji.c"
           }
         ],
         "folders": []
@@ -39,6 +45,9 @@
           },
           {
             "path": "System/Serial.c"
+          },
+          {
+            "path": "System/PWM.c"
           },
           {
             "path": "System/TIM.c"

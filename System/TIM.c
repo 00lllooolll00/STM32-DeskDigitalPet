@@ -1,117 +1,33 @@
-/*
-    TIM2 --> 四肢
-    TIM3 --> 尾巴
-*/
 #include "TIM.h"
 
 /**
- * @brief 定时器PWM模式初始化
+ * @brief 1ms中断函数初始化
  * 
  */
-void PWM_Init(void)
+void TIM4_Init(void)
 {
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3,ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4,ENABLE);
 
-    GPIO_InitTypeDef GPIOA_PWM_Init_Struct;
-    GPIOA_PWM_Init_Struct.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIOA_PWM_Init_Struct.GPIO_Pin = AllBody;
-    GPIOA_PWM_Init_Struct.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA,&GPIOA_PWM_Init_Struct);
+    TIM_InternalClockConfig(TIM4);
 
-    TIM_InternalClockConfig(TIM2);
-    TIM_InternalClockConfig(TIM3);
+    TIM_TimeBaseInitTypeDef TIM4_Init_Struct;
+    TIM_TimeBaseStructInit(&TIM4_Init_Struct);
+    TIM4_Init_Struct.TIM_ClockDivision = TIM_CKD_DIV1;
+    TIM4_Init_Struct.TIM_CounterMode = TIM_CounterMode_Up;
+    TIM4_Init_Struct.TIM_Period = 1000 - 1;
+    TIM4_Init_Struct.TIM_Prescaler = 72 - 1;
+    TIM_TimeBaseInit(TIM4,&TIM4_Init_Struct);
 
-    /*TIM2********************************************/
-    TIM_TimeBaseInitTypeDef TIM2_PWM_Init_Struct;
-    TIM_TimeBaseStructInit(&TIM2_PWM_Init_Struct);
-    TIM2_PWM_Init_Struct.TIM_ClockDivision = TIM_CKD_DIV1;
-    TIM2_PWM_Init_Struct.TIM_CounterMode = TIM_CounterMode_Up;
-    TIM2_PWM_Init_Struct.TIM_Period = 20000 - 1;
-    TIM2_PWM_Init_Struct.TIM_Prescaler = 72 - 1;
-    TIM_TimeBaseInit(TIM2,&TIM2_PWM_Init_Struct);
+    TIM_ClearFlag(TIM4,TIM_FLAG_Update);
 
-    TIM_OCInitTypeDef TIM2_OC_Init_Struct;
-    TIM_OCStructInit(&TIM2_OC_Init_Struct);
-    TIM2_OC_Init_Struct.TIM_OCMode = TIM_OCMode_PWM1;
-    TIM2_OC_Init_Struct.TIM_OCPolarity = TIM_OCPolarity_High;
-    TIM2_OC_Init_Struct.TIM_OutputState = TIM_OutputState_Enable;
-    TIM2_OC_Init_Struct.TIM_Pulse = 0;
-    TIM_OC1Init(TIM2,&TIM2_OC_Init_Struct);
-    TIM_OC2Init(TIM2,&TIM2_OC_Init_Struct);
-    TIM_OC3Init(TIM2,&TIM2_OC_Init_Struct);
-    TIM_OC4Init(TIM2,&TIM2_OC_Init_Struct);
-    /********************************************TIM2*/
+    TIM_ITConfig(TIM4,TIM_IT_Update,ENABLE);
 
-    /*TIM3********************************************/
-    TIM_TimeBaseInitTypeDef TIM3_PWM_Init_Struct;
-    TIM_TimeBaseStructInit(&TIM3_PWM_Init_Struct);
-    TIM3_PWM_Init_Struct.TIM_ClockDivision = TIM_CKD_DIV1;
-    TIM3_PWM_Init_Struct.TIM_CounterMode = TIM_CounterMode_Up;
-    TIM3_PWM_Init_Struct.TIM_Period = 20000 - 1;
-    TIM3_PWM_Init_Struct.TIM_Prescaler = 72 - 1;
-    TIM_TimeBaseInit(TIM3,&TIM3_PWM_Init_Struct);
+    NVIC_InitTypeDef TIM4_NVIC_Init_Struct;
+    TIM4_NVIC_Init_Struct.NVIC_IRQChannel = TIM4_IRQn;
+    TIM4_NVIC_Init_Struct.NVIC_IRQChannelCmd = ENABLE;
+    TIM4_NVIC_Init_Struct.NVIC_IRQChannelPreemptionPriority = 0;
+    TIM4_NVIC_Init_Struct.NVIC_IRQChannelSubPriority = 3;
+    NVIC_Init(&TIM4_NVIC_Init_Struct);
 
-    TIM_OCInitTypeDef TIM3_OC_Init_Struct;
-    TIM_OCStructInit(&TIM3_OC_Init_Struct);
-    TIM3_OC_Init_Struct.TIM_OCMode = TIM_OCMode_PWM1;
-    TIM3_OC_Init_Struct.TIM_OCPolarity = TIM_OCPolarity_High;
-    TIM3_OC_Init_Struct.TIM_OutputState = TIM_OutputState_Enable;
-    TIM3_OC_Init_Struct.TIM_Pulse = 0;
-    TIM_OC1Init(TIM3,&TIM3_OC_Init_Struct);
-    /********************************************TIM3*/
-
-    TIM_Cmd(TIM2,ENABLE);
-    TIM_Cmd(TIM3,ENABLE);
-}
-
-/**
- * @brief TIM2 OC1占空比
- * 
- * @param Duty 占空比
- */
-void Set_TIM2CCR1(uint16_t Duty)
-{
-    TIM_SetCompare1(TIM2,Duty);
-}
-
-/**
- * @brief TIM2 OC2占空比
- * 
- * @param Duty 占空比
- */
-void Set_TIM2CCR2(uint16_t Duty)
-{
-    TIM_SetCompare2(TIM2,Duty);
-}
-
-/**
- * @brief TIM2 OC3占空比
- * 
- * @param Duty 占空比
- */
-void Set_TIM2CCR3(uint16_t Duty)
-{
-    TIM_SetCompare3(TIM2,Duty);
-}
-
-/**
- * @brief TIM2 OC4占空比
- * 
- * @param Duty 占空比
- */
-void Set_TIM2CCR4(uint16_t Duty)
-{
-    TIM_SetCompare4(TIM2,Duty);
-}
-
-/**
- * @brief TIM1 OC1占空比
- * 
- * @param Duty 占空比
- */
-void Set_TIM3CCR(uint16_t Duty)
-{
-    TIM_SetCompare1(TIM3,Duty);
+    TIM_Cmd(TIM4,ENABLE);   
 }
