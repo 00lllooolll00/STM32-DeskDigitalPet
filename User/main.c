@@ -8,20 +8,20 @@ uint8_t ActC_Slow;//动作配置函数减速
 uint16_t inSleep_Counter = 0;//进入睡眠计数
 uint16_t Error_Counter = 0;//串口超时计数
 
-
 /**
  * @brief 动作配置函数
  * 
  */
 void ActionConfig(void)
 {
-	if(ActC_Slow)return;
-	ActC_Slow = 1;
+	Inst NowState = Def_ActMode();
 
-	if(Serial_RxFlag == Finish)
+	if(NowState == TailWag)
 	{
-		Inst NowState = Def_ActMode();
-		switch(NowState)
+		(WagFlag == Wag_On)?(WagFlag = Wag_Off):(WagFlag = Wag_On);
+	}
+
+	switch(NowState)
 		{
 			case WakeUp:
 
@@ -29,51 +29,43 @@ void ActionConfig(void)
 			break;
 
 			case Forward:
-
+				Action_Forward();
 				Emoji_Turn(Emoji_Normal);				
 			break;
 
 			case BackWard:
-
+				Action_Backward();
 				Emoji_Turn(Emoji_Normal);				
 			break;
 
 			case TurnLeft:
+				Action_TurnLeft();
 				Emoji_Turn(Emoji_Cute);				
 			break;
 				
 			case TurnRight:
-
+				Action_TurnRight();
 				Emoji_Turn(Emoji_Cute);				
 			break;
 
 			case Swing:
-
+				Action_Swing();
 				Emoji_Turn(Emoji_Laugh);
 			break;
 
 			case LieDown:
-
+				Action_LieDown();
 				Emoji_Turn(Emoji_Happy);
 			break;
 
 			case SitDown:
-
+				Action_SitDown();
 				Emoji_Turn(Emoji_Happy);
-			break;
-
-			case TailWag:
-
-				Emoji_Turn(Emoji_Kiss);
 			break;
 
 			case Sleep:
-
+				Action_LieDown();
 				Emoji_Turn(Emoji_Sleep);
-			break;
-
-			case SwingFast:
-				Emoji_Turn(Emoji_Happy);
 			break;
 
 			case Woof:
@@ -82,39 +74,75 @@ void ActionConfig(void)
 			break;
 
 			case StandUp:
-
+				Action_StandUp();
 				Emoji_Turn(Emoji_Normal);
 			break;
 
 			case JumpForward:
-
+				Action_JumpForward();
 				Emoji_Turn(Emoji_Grinning);				
 			break;
 
 			case JumpBackward:
-
+				Action_JumpBackward();
 				Emoji_Turn(Emoji_Grinning);				
 			break;
+
+			case SpeedUp:
+				if(MoveSpeed >= 100)
+				{
+					MoveSpeed -= 20;
+				}
+				else
+				{
+					Voice_SendDataPack(Inst_SpeedMax);
+				}
+				Emoji_Turn(Emoji_Grinning);				
+			break;
+
+			case SpeedDown:
+				if(MoveSpeed <= 200)
+				{
+					MoveSpeed += 20;
+				}
+				else
+				{
+					Voice_SendDataPack(Inst_SpeedMin);
+				}
+				Emoji_Turn(Emoji_Grinning);				
+			break;
+
+			case SayHello:
+				Action_SayHello();
+				Emoji_Turn(Emoji_Cute);				
+			break;	
 
 			default:
 			break;
 		}
-	}
-	Serial_RxFlag = NotFinish;
 }
-
 /*主函数******************************************/
 int main(void)
 {
 	Emoji_Init();
-	Servo_Init();
-	Voice_Init();
-	BlueTooth_Init();
+	Serial_Init();
 	TIM4_Init();
-	
+	Action_Init();
+
 	while(1)
 	{
-		ActionConfig();
+		if(Serial_RxFlag == Finish)
+		{
+			ActionConfig();
+			Serial_RxFlag = NotFinish;
+		}
+		else
+		{
+			if(ActC_Slow)continue;
+			ActC_Slow = 1;
+			ActionConfig();
+		}
+
 
 		if(inSleep_Counter >= 60000)//1分钟没有收到消息则自动进入睡眠模式
 		{
@@ -165,9 +193,9 @@ void TIM4_IRQHandler(void)
 		System_Tick ++;//系统时间++
 		for(uint8_t i = 0;i < MaxDelayTasks;i ++)//判断当前延时任务是否结束
 		{
-			Def_TaskState(&delay[i]);
+			Def_TaskState(i);
 		}
-		
+
 		TIM_ClearITPendingBit(TIM4,TIM_IT_Update);
 	}
 }

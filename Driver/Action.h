@@ -4,7 +4,7 @@
 #include "stm32f10x.h"
 #include "Servo.h"
 
-#define MaxDelayTasks   10
+#define MaxDelayTasks   12
 
 typedef enum
 {
@@ -18,6 +18,24 @@ typedef enum
     delayFinish
 }delayStatus;//延时任务完成与否
 
+typedef enum
+{
+    Leg_State_1,
+    Leg_State_2
+}JumpLeg;//跳跃时腿部交换
+
+typedef enum
+{
+    InHello,
+    NotInHello
+}HelloState;//是否在hello中
+
+typedef enum
+{
+    Wag_On,
+    Wag_Off
+}WagState;
+
 typedef struct
 {
     uint16_t StartTime;//延时任务开始时间
@@ -25,12 +43,28 @@ typedef struct
     ActiveState ActiveFlag;//激活标志位
 }DelayTask;//延时任务结构体
 
+
 extern uint32_t System_Tick;//当前系统时间
 extern DelayTask delay[];//延时任务数组
+extern uint16_t MoveSpeed;//运动延时
+extern WagState WagFlag;//摇尾巴标志位
+
+
 
 void CreateDelayTask(uint8_t TaskIndex,uint16_t xms);
-void Def_TaskState(DelayTask *Task);
+void Def_TaskState(uint8_t Index);
 void Action_Init(void);
-
+void Action_StandUp(void);
+void Action_SitDown(void);
+void Action_LieDown(void);
+void Action_Forward(void);
+void Action_Backward(void);
+void Action_TurnLeft(void);
+void Action_TurnRight(void);
+void Action_Swing(void);
+void Action_TailWag(void);
+void Action_JumpForward(void);
+void Action_JumpBackward(void);
+void Action_SayHello(void);
 
 #endif

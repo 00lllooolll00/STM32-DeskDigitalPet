@@ -7,8 +7,8 @@
 void Servo_Init(void)
 {
     PWM_Init();
-    Set_LFLeg(0);
-    Set_LRLeg(0);
+    Set_FLLeg(0);
+    Set_FRLeg(0);
     Set_HLLeg(0);
     Set_HRLeg(0);
     Set_Tail(0);
@@ -19,7 +19,7 @@ void Servo_Init(void)
  * 
  * @param Angle 舵机角度
  */
-void Set_LFLeg(float Angle)
+void Set_FLLeg(float Angle)
 {
     Set_TIM2CCR1(Angle / 180 * 2000 + 500);
 }
@@ -29,7 +29,7 @@ void Set_LFLeg(float Angle)
  * 
  * @param Angle 舵机角度
  */
-void Set_LRLeg(float Angle)
+void Set_FRLeg(float Angle)
 {
     Set_TIM2CCR2((180 - Angle) / 180 * 2000 + 500);
 }

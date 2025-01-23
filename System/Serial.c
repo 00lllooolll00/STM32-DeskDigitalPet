@@ -26,20 +26,25 @@ const uint8_t Inst_LieDown[3] = {0xFA,0xFB,0xFC};//趴下指令
 const uint8_t Inst_SitDown[3] = {0x0A,0x0B,0x0C};//蹲下指令
 const uint8_t Inst_TailWag[3] = {0x1A,0x1B,0x1C};//摇尾巴指令
 const uint8_t Inst_Sleep[3] = {0x2A,0x2B,0x2C};//睡眠指令
-const uint8_t Inst_SwingFast[3] = {0x3A,0x3B,0x3C};//快速摇摆指令
 const uint8_t Inst_Woof[3] = {0x4A,0x4B,0x4C};//叫两声指令
 const uint8_t Inst_StandUp[3] = {0x5A,0x5B,0x5C};//立正指令
 const uint8_t Inst_JumpForward[3] = {0x6A,0x6B,0x6C};//向前跳指令
 const uint8_t Inst_JumpBackward[3] = {0x7A,0x7B,0x7C};//向后跳指令
+const uint8_t Inst_SpeedUp[3] = {0x8A,0x8B,0x8C};//加速
+const uint8_t Inst_SpeedDown[3] = {0x9A,0x9B,0x9C};//减速
+const uint8_t Inst_SayHello[3] = {0x1B,0x3B,0x5B};//打招呼
 
 const uint8_t Inst_SleepDown[3] = {0xF1,0xF2,0xF3};//主动进入睡眠模式
+const uint8_t Inst_SpeedMax[3] = {0xF4,0xF5,0xF6};//速度最大
+const uint8_t Inst_SpeedMin[3] = {0xE1,0xE2,0xE3};//速度最小
 
-const uint8_t *Inst_Lst[15] = {
+const uint8_t *Inst_Lst[Instr_Num] = {
     Inst_WakeUp,Inst_Forward,Inst_Backward,
     Inst_TurnLeft,Inst_TurnRight,Inst_Swing,
     Inst_LieDown,Inst_SitDown,Inst_TailWag,
-    Inst_Sleep,Inst_SwingFast,Inst_Woof,
-    Inst_StandUp,Inst_JumpForward,Inst_JumpBackward
+    Inst_Sleep,Inst_Woof, Inst_StandUp,
+    Inst_JumpForward,Inst_JumpBackward,Inst_SpeedUp,
+    Inst_SpeedDown,Inst_SayHello
 };//所有指令集合
 
 /**
@@ -73,12 +78,12 @@ void Voice_Init(void)
 
     USART_ITConfig(USART1,USART_IT_RXNE,ENABLE);
 
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
     NVIC_InitTypeDef NVIC_Voice_Init_Struct;
     NVIC_Voice_Init_Struct.NVIC_IRQChannel = USART1_IRQn;
     NVIC_Voice_Init_Struct.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Voice_Init_Struct.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_Voice_Init_Struct.NVIC_IRQChannelSubPriority = 0;
+    NVIC_Voice_Init_Struct.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_Voice_Init_Struct.NVIC_IRQChannelSubPriority = 1;
     NVIC_Init(&NVIC_Voice_Init_Struct);
 
     USART_Cmd(USART1,ENABLE);
@@ -118,25 +123,34 @@ void BlueTooth_Init(void)
     NVIC_InitTypeDef NVIC_BlueTooth_Init_Struct;
     NVIC_BlueTooth_Init_Struct.NVIC_IRQChannel = USART3_IRQn;
     NVIC_BlueTooth_Init_Struct.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_BlueTooth_Init_Struct.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_BlueTooth_Init_Struct.NVIC_IRQChannelPreemptionPriority = 2;
     NVIC_BlueTooth_Init_Struct.NVIC_IRQChannelSubPriority = 1;
     NVIC_Init(&NVIC_BlueTooth_Init_Struct);
 
     USART_Cmd(USART3,ENABLE);
 }
 
+/**
+ * @brief 初始化串口
+ * 
+ */
+void Serial_Init(void)
+{
+    Voice_Init();
+    BlueTooth_Init();
+}
+
 /*语音通讯中断***************************************************************/
 void USART1_IRQHandler(void)
 {
-    uint8_t Voice_RxData = 0x00;//当前接收到的数据
     static uint8_t Voice_pRxData = 0;//数据接收位数
-    if(USART_GetITStatus(USART1,USART_IT_RXNE) == SET && Serial_RxFlag == NotFinish)
+    if(USART_GetITStatus(USART1,USART_IT_RXNE) == SET)
     {   
-        Voice_RxData = USART_ReceiveData(USART1);
+        uint8_t Voice_RxData = USART_ReceiveData(USART1);
         switch(Receive_State)
         {
             case State_Wait_Head:
-                if( Voice_RxData == 0xFF)
+                if( Voice_RxData == 0xFF && Serial_RxFlag == NotFinish)
                 {
                     Receive_State = State_Receive_Data;
                 }
@@ -161,7 +175,6 @@ void USART1_IRQHandler(void)
                         TimeOut_Flag = NotOverTime;
                         ErrorFlag = notError;
                         Receive_State = State_Wait_Head;
-                        Serial_RxFlag = Finish;
                     }
                 }
                 else
@@ -172,7 +185,7 @@ void USART1_IRQHandler(void)
                         TimeOut_Flag = NotOverTime;
                         ErrorFlag = notError;
                         Receive_State = State_Wait_Head;
-                        Serial_RxFlag = Finish;
+                        Serial_RxFlag = NotFinish;
                         return;
                    }
 
@@ -187,15 +200,14 @@ void USART1_IRQHandler(void)
 /*蓝牙通讯中断***************************************************************/
 void USART3_IRQHandler(void)
 {
-    uint8_t BlueTooth_RxData = 0x00;//当前接收到的数据
     static uint8_t BlueTooth_pRxData = 0;//数据接收位数
-    if(USART_GetITStatus(USART3,USART_IT_RXNE) == SET && Serial_RxFlag == NotFinish)
+    if(USART_GetITStatus(USART3,USART_IT_RXNE) == SET)
     {
-        BlueTooth_RxData = USART_ReceiveData(USART3);
+        uint8_t BlueTooth_RxData = USART_ReceiveData(USART3);
         switch(Receive_State)
         {
             case State_Wait_Head:
-                if( BlueTooth_RxData == 0xFF)
+                if( BlueTooth_RxData == 0xFF && Serial_RxFlag == NotFinish)
                 {
                     Receive_State = State_Receive_Data;
                 }
@@ -220,7 +232,6 @@ void USART3_IRQHandler(void)
                         TimeOut_Flag = NotOverTime;
                         ErrorFlag = notError;
                         Receive_State = State_Wait_Head;
-                        Serial_RxFlag = Finish;
                     }
                 }
                 else
@@ -231,7 +242,7 @@ void USART3_IRQHandler(void)
                         TimeOut_Flag = NotOverTime;
                         ErrorFlag = notError;
                         Receive_State = State_Wait_Head;
-                        Serial_RxFlag = Finish;
+                        Serial_RxFlag = NotFinish;
                         return;
                    }
                 }
@@ -249,7 +260,7 @@ void USART3_IRQHandler(void)
  */
 Inst Def_ActMode(void)
 {
-    for(uint8_t j = 0;j < 15;j ++)
+    for(uint8_t j = 0;j < Instr_Num;j ++)
     {
         for(uint8_t i = 0;i < 3;i ++)
         {
@@ -257,9 +268,14 @@ Inst Def_ActMode(void)
             {
                 break;
             }
+            else
+            {
+                return (Inst)j;   
+            }
         }
-        return (Inst)j;
+        
     }
+    return (Inst)17;
 }
 
 /**

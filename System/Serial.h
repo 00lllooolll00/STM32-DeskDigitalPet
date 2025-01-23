@@ -8,6 +8,8 @@
 #define BlueTooth_TXD       GPIO_Pin_10
 #define BlueTooth_RXD       GPIO_Pin_11
 
+#define Instr_Num           17
+
 typedef enum 
 {
     State_Wait_Head,
@@ -33,12 +35,13 @@ typedef enum
     SitDown,
     TailWag,
     Sleep,
-    SwingFast,
     Woof,
     StandUp,
     JumpForward,
     JumpBackward,
-    SleepDown
+    SpeedUp,
+    SpeedDown,
+    SayHello
 }Inst;//动作指令
 
 typedef enum
@@ -58,13 +61,14 @@ extern Receive_Flag Serial_RxFlag ;//串口模块是否接收完成
 extern uint8_t RxDataPack[];//串口接收到的数据包
 
 extern const uint8_t Inst_SleepDown[];//主动进入睡眠模式
+extern const uint8_t Inst_SpeedMax[];//速度最大
+extern const uint8_t Inst_SpeedMin[];//速度最小
 
 extern ErrorType ErrorFlag;//串口接收出错标志位
 extern Timeout TimeOut_Flag;//超时标志位
 
 
-void Voice_Init(void);
-void BlueTooth_Init(void);
+void Serial_Init(void);
 Inst Def_ActMode(void);
 void Voice_SendDataPack(const uint8_t *DataPack);
 

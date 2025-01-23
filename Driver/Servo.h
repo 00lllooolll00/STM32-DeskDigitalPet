@@ -4,8 +4,8 @@
 #include "PWM.h"
 
 void Servo_Init(void);
-void Set_LFLeg(float Angle);
-void Set_LRLeg(float Angle);
+void Set_FLLeg(float Angle);
+void Set_FRLeg(float Angle);
 void Set_HLLeg(float Angle);
 void Set_HRLeg(float Angle);
 void Set_Tail(float Angle);
