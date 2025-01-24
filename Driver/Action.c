@@ -308,7 +308,7 @@ void Action_TailWag(void)
            break;
         }
         Set_Tail(i);
-        CreateDelayTask(6,6);
+        CreateDelayTask(6,3);
         while(Is_DelayDone(6) != delayFinish);
     }
 
@@ -319,7 +319,7 @@ void Action_TailWag(void)
             break;
         }
         Set_Tail(i);
-        CreateDelayTask(6,6);
+        CreateDelayTask(6,3);
         while(Is_DelayDone(6) != delayFinish);
     }
 }
