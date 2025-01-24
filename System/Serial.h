@@ -65,6 +65,7 @@ typedef enum
 extern Receive_Flag Serial_RxFlag ;//串口模块是否接收完成
  
 extern uint8_t RxDataPack[];//串口接收到的数据包
+extern uint8_t RxDataPack_Buf[];//存储上一次接收到的数据包
 
 extern const uint8_t Inst_SleepDown[];//主动进入睡眠模式
 extern const uint8_t Inst_SpeedMax[];//速度最大

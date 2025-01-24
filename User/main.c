@@ -4,7 +4,7 @@
 #include "Serial.h"
 #include "TIM.h"
 
-uint16_t inSleep_Counter = 0;//进入睡眠计数
+uint32_t inSleep_Counter = 0;//进入睡眠计数
 uint16_t Error_Counter = 0;//串口超时计数
 
 /**
@@ -30,10 +30,11 @@ void Led_Init(void)
 void ActionConfig(void)
 {
 	static Inst NowState = Sleep;
-	if(Serial_RxFlag == Finish)
+	if(Serial_RxFlag == Finish || Change_Flag == Proactive_Change)
 	{
 		NowState = Def_ActMode();
 		Clear_AllTask();
+		Change_Flag = nProactive_Change;
 		Serial_RxFlag = NotFinish;
 	}
 	switch(NowState)
@@ -155,12 +156,15 @@ int main(void)
 	while(1)
 	{
 		ActionConfig();
-		if(inSleep_Counter >= 60000)//1分钟没有收到消息则自动进入睡眠模式
+		if(inSleep_Counter >= 60000 * 3)//3分钟没有收到消息则自动进入睡眠模式
 		{
 			inSleep_Counter = 0;//计数器清空
 			Emoji_Turn(Emoji_Sleep);//切换表情
+			Action_LieDown();
 			Voice_SendDataPack(Inst_SleepDown);//向语音模块发送数据包告诉进入睡眠模式
-			__WFI();
+			TIM_Cmd(TIM4,DISABLE);//关闭TIM4避免中断打断睡眠
+			__WFI();//进入睡眠模式
+			TIM_Cmd(TIM4,ENABLE);//退出睡眠模式先打开TIM4
 		}
 	}
 }
@@ -174,7 +178,7 @@ void TIM4_IRQHandler(void)
 		/*睡眠模式进入*/
 		if(Serial_RxFlag == NotFinish)//如果没接收到串口指令则开始计时
 		{
-			if( ++inSleep_Counter == 65534)
+			if( ++inSleep_Counter == 60000 * 4)
 			{
 				inSleep_Counter = 0;
 			}

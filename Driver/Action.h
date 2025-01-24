@@ -9,8 +9,15 @@
 
 typedef enum
 {
-    isActive,
-    notActive
+    nProactive_Change,
+    Proactive_Change
+}ProChange;//主动进入模式更改
+
+typedef enum
+{
+    notActive,
+    isActive
+    
 }ActiveState;//延时任务激活状态
 
 typedef enum
@@ -33,15 +40,16 @@ typedef enum
 
 typedef struct
 {
-    uint16_t StartTime;//延时任务开始时间
+    uint64_t StartTime;//延时任务开始时间
     uint16_t Duration;//延时时间
     ActiveState ActiveFlag;//激活标志位
 }DelayTask;//延时任务结构体
 
 
-extern __IO uint32_t System_Tick;//当前系统时间
+extern __IO uint64_t System_Tick;//当前系统时间
 extern DelayTask delay[];//延时任务数组
 extern uint16_t MoveSpeed;//运动延时
+extern ProChange Change_Flag;//主动进入模式变换标志位
 
 void Clear_AllTask(void);
 void CreateDelayTask(uint8_t TaskIndex,uint16_t xms);

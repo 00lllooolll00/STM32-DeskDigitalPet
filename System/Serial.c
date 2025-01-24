@@ -14,7 +14,8 @@ WagState WagFlag = Wag_Off;//摇尾巴标志位
 ErrorType ErrorFlag = notError;//串口接收出错标志位
 Timeout TimeOut_Flag = NotOverTime;//超时标志位
 
-uint8_t RxDataPack[3];//串口接收到的数据包
+uint8_t RxDataPack[3] = {0x00,0x00,0x00};//串口接收到的数据包
+uint8_t RxDataPack_Buf[3] = {0x00,0x00,0x00};//存储上一次接收到的数据包
 
 const uint8_t Inst_WakeUp[3] = {0x00,0x00,0x00};//唤醒指令
 const uint8_t Inst_Forward[3] = {0xAA,0xAB,0xAC};//前进指令
@@ -144,6 +145,10 @@ void Serial_Init(void)
 void USART1_IRQHandler(void)
 {
     static uint8_t Voice_pRxData = 0;//数据接收位数
+    for(uint8_t i = 0;i < 3;i ++)
+    {
+        RxDataPack_Buf[i] = RxDataPack[i];
+    }
     if(USART_GetITStatus(USART1,USART_IT_RXNE) == SET)
     {   
         uint8_t Voice_RxData = USART_ReceiveData(USART1);
@@ -205,6 +210,10 @@ void USART1_IRQHandler(void)
 void USART3_IRQHandler(void)
 {
     static uint8_t BlueTooth_pRxData = 0;//数据接收位数
+    for(uint8_t i = 0;i < 3;i ++)
+    {
+        RxDataPack_Buf[i] = RxDataPack[i];
+    }
     if(USART_GetITStatus(USART3,USART_IT_RXNE) == SET)
     {
         uint8_t BlueTooth_RxData = USART_ReceiveData(USART3);
