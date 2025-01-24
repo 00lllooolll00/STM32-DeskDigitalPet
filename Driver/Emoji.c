@@ -10,7 +10,7 @@ void Emoji_Init(void)
     OLED_Init();
 
     OLED_Clear();
-    OLED_ShowImage(0,0,128,64,Emoji_Cute);
+    OLED_ShowImage(0,0,128,64,Emoji_Sleep);
     OLED_Update();
 }
 

@@ -4,9 +4,24 @@
 #include "Serial.h"
 #include "TIM.h"
 
-uint8_t ActC_Slow;//动作配置函数减速
 uint16_t inSleep_Counter = 0;//进入睡眠计数
 uint16_t Error_Counter = 0;//串口超时计数
+
+/**
+ * @brief 显示摇尾巴
+ * 
+ */
+void Led_Init(void)
+{
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
+	GPIO_InitTypeDef LED_Init;
+	LED_Init.GPIO_Mode = GPIO_Mode_Out_PP;
+	LED_Init.GPIO_Pin = GPIO_Pin_13;
+	LED_Init.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC,&LED_Init);
+
+	GPIO_SetBits(GPIOC,GPIO_Pin_13);
+}
 
 /**
  * @brief 动作配置函数
@@ -14,58 +29,65 @@ uint16_t Error_Counter = 0;//串口超时计数
  */
 void ActionConfig(void)
 {
-	Inst NowState = Def_ActMode();
-
-	if(NowState == TailWag)
+	static Inst NowState = Sleep;
+	if(Serial_RxFlag == Finish)
 	{
-		(WagFlag == Wag_On)?(WagFlag = Wag_Off):(WagFlag = Wag_On);
+		NowState = Def_ActMode();
+		Clear_AllTask();
+		Serial_RxFlag = NotFinish;
 	}
-
 	switch(NowState)
 		{
-			case WakeUp:
-
-				Emoji_Turn(Emoji_Normal);
+			case TailWag:
+				if(WagFlag == Wag_On)
+				{
+					GPIO_ResetBits(GPIOC,GPIO_Pin_13);
+				}
+				else
+				{
+					GPIO_SetBits(GPIOC,GPIO_Pin_13);
+				}
+				Action_TailWag();
 			break;
 
 			case Forward:
-				Action_Forward();
-				Emoji_Turn(Emoji_Normal);				
+				Emoji_Turn(Emoji_Normal);
+				Action_Forward();			
 			break;
 
 			case BackWard:
+				Emoji_Turn(Emoji_Normal);
 				Action_Backward();
-				Emoji_Turn(Emoji_Normal);				
 			break;
 
 			case TurnLeft:
-				Action_TurnLeft();
 				Emoji_Turn(Emoji_Cute);				
+				Action_TurnLeft();
 			break;
 				
 			case TurnRight:
-				Action_TurnRight();
 				Emoji_Turn(Emoji_Cute);				
+				Action_TurnRight();
 			break;
 
 			case Swing:
-				Action_Swing();
 				Emoji_Turn(Emoji_Laugh);
+				Action_Swing();
 			break;
 
 			case LieDown:
-				Action_LieDown();
 				Emoji_Turn(Emoji_Happy);
+				Action_LieDown();
 			break;
 
 			case SitDown:
-				Action_SitDown();
 				Emoji_Turn(Emoji_Happy);
+				Action_SitDown();
 			break;
 
 			case Sleep:
-				Action_LieDown();
 				Emoji_Turn(Emoji_Sleep);
+				Action_LieDown();
 			break;
 
 			case Woof:
@@ -74,21 +96,22 @@ void ActionConfig(void)
 			break;
 
 			case StandUp:
-				Action_StandUp();
 				Emoji_Turn(Emoji_Normal);
+				Action_StandUp();
 			break;
 
 			case JumpForward:
-				Action_JumpForward();
 				Emoji_Turn(Emoji_Grinning);				
+				Action_JumpForward();
 			break;
 
 			case JumpBackward:
-				Action_JumpBackward();
 				Emoji_Turn(Emoji_Grinning);				
+				Action_JumpBackward();
 			break;
 
 			case SpeedUp:
+				Emoji_Turn(Emoji_Grinning);				
 				if(MoveSpeed >= 100)
 				{
 					MoveSpeed -= 20;
@@ -97,10 +120,10 @@ void ActionConfig(void)
 				{
 					Voice_SendDataPack(Inst_SpeedMax);
 				}
-				Emoji_Turn(Emoji_Grinning);				
 			break;
 
 			case SpeedDown:
+				Emoji_Turn(Emoji_Grinning);				
 				if(MoveSpeed <= 200)
 				{
 					MoveSpeed += 20;
@@ -109,12 +132,11 @@ void ActionConfig(void)
 				{
 					Voice_SendDataPack(Inst_SpeedMin);
 				}
-				Emoji_Turn(Emoji_Grinning);				
 			break;
 
 			case SayHello:
-				Action_SayHello();
 				Emoji_Turn(Emoji_Cute);				
+				Action_SayHello();
 			break;	
 
 			default:
@@ -126,24 +148,13 @@ int main(void)
 {
 	Emoji_Init();
 	Serial_Init();
+	Led_Init();
 	TIM4_Init();
 	Action_Init();
 
 	while(1)
 	{
-		if(Serial_RxFlag == Finish)
-		{
-			ActionConfig();
-			Serial_RxFlag = NotFinish;
-		}
-		else
-		{
-			if(ActC_Slow)continue;
-			ActC_Slow = 1;
-			ActionConfig();
-		}
-
-
+		ActionConfig();
 		if(inSleep_Counter >= 60000)//1分钟没有收到消息则自动进入睡眠模式
 		{
 			inSleep_Counter = 0;//计数器清空
@@ -160,9 +171,6 @@ void TIM4_IRQHandler(void)
 {
 	if(TIM_GetITStatus(TIM4,TIM_IT_Update) == SET)
 	{
-		/*程序减速*/
-		if( ++ActC_Slow == 10)ActC_Slow = 0;
-
 		/*睡眠模式进入*/
 		if(Serial_RxFlag == NotFinish)//如果没接收到串口指令则开始计时
 		{

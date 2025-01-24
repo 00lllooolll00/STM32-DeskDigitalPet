@@ -1,15 +1,16 @@
 #include "Action.h"
 
 DelayTask delay[MaxDelayTasks];//延时任务数组
-uint32_t System_Tick = 0;//当前系统时间
+__IO uint32_t System_Tick = 0;//当前系统时间
 uint16_t MoveSpeed = 200;//运动延时
 HelloState HelloFlag = NotInHello;//Hello标志位
-WagState WagFlag = Wag_Off;//摇尾巴标志位
+JumpLeg JumpForward_F = Leg_State_1;//向前跳是否需要交换腿
+JumpLeg JumpBackward_F = Leg_State_1;//向后跳是否需要交换腿
 
 /**
  * @brief 创建一个延时任务
  * 
- * @param TaskIndex 任务索引 取值范围0——11
+ * @param TaskIndex 任务索引 取值范围0——13
  * @param xms 延时时间(ms)
  */
 void CreateDelayTask(uint8_t TaskIndex,uint16_t xms)
@@ -22,7 +23,7 @@ void CreateDelayTask(uint8_t TaskIndex,uint16_t xms)
 /**
  * @brief 返回当前任务的执行状态
  * 
- * @param Index 延时任务索引 delay[0——11]
+ * @param Index 延时任务索引 0——13
  * @return delayStatus 执行状态
  */
 delayStatus Is_DelayDone(uint8_t Index)
@@ -40,7 +41,7 @@ delayStatus Is_DelayDone(uint8_t Index)
 /**
  * @brief 判断当前延时任务是否结束
  * 
- * @param Index 延时任务 索引 [0——11]
+ * @param Index 延时任务索引 0——13
  */
 void Def_TaskState(uint8_t Index)
 {
@@ -51,13 +52,28 @@ void Def_TaskState(uint8_t Index)
 }
 
 /**
+ * @brief 将所有延时任务清除
+ * 
+ */
+void Clear_AllTask(void)
+{
+    for(uint8_t i = 0;i < MaxDelayTasks;i ++)
+    {
+        delay[i].StartTime = System_Tick;
+        delay[i].Duration = 0xFFFF;
+        delay[i].ActiveFlag = notActive;
+    }
+}
+
+/**
  * @brief 动作初始化
  * 
  */
 void Action_Init(void)
 {
     Servo_Init();
-    Action_StandUp();
+    JumpForward_F = Leg_State_1;
+    JumpBackward_F = Leg_State_1;
     WagFlag = Wag_Off;
 }
 
@@ -72,13 +88,17 @@ void Action_StandUp(void)
     Set_FRLeg(90);
     CreateDelayTask(0,150);
     while(Is_DelayDone(0) != delayFinish);
+    Def_TaskState(0);
 
     Set_HLLeg(90);
     Set_HRLeg(90);
 
     if(WagFlag == Wag_On)
     {
-        Action_TailWag();
+        for(uint8_t i = 0;i < 3;i ++)
+        {
+            RxDataPack[i] = Inst_TailWag[i];
+        }
     }
 }
 
@@ -93,13 +113,17 @@ void Action_SitDown(void)
     Set_FRLeg(90);
     CreateDelayTask(1,150);
     while(Is_DelayDone(1) != delayFinish);
+    Def_TaskState(1);
 
     Set_HLLeg(20);
     Set_HRLeg(20);
 
     if(WagFlag == Wag_On)
     {
-        Action_TailWag();
+        for(uint8_t i = 0;i < 3;i ++)
+        {
+            RxDataPack[i] = Inst_TailWag[i];
+        }
     }
 
 }
@@ -115,13 +139,17 @@ void Action_LieDown(void)
     Set_FRLeg(20);
     CreateDelayTask(2,150);
     while(Is_DelayDone(2) != delayFinish);
+    Def_TaskState(2);
 
     Set_HLLeg(20);
     Set_HRLeg(20);
 
     if(WagFlag == Wag_On)
     {
-        Action_TailWag();
+        for(uint8_t i = 0;i < 3;i ++)
+        {
+            RxDataPack[i] = Inst_TailWag[i];
+        }
     }
 }
 
@@ -136,14 +164,17 @@ void Action_Forward(void)
     Set_HLLeg(45);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FLLeg(135);
     Set_HRLeg(135);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FRLeg(90);
     Set_HLLeg(90);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FLLeg(90);
     Set_HRLeg(90);
 
@@ -151,14 +182,17 @@ void Action_Forward(void)
     Set_HRLeg(45);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FRLeg(135);
     Set_HLLeg(135);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FLLeg(90);
     Set_HRLeg(90);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FRLeg(90);
     Set_HLLeg(90);
 }
@@ -174,14 +208,17 @@ void Action_Backward(void)
     Set_HLLeg(135);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FLLeg(45);
     Set_HRLeg(45);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FRLeg(90);
     Set_HLLeg(90);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FLLeg(90);
     Set_HRLeg(90);
 
@@ -189,14 +226,17 @@ void Action_Backward(void)
     Set_HRLeg(135);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FRLeg(45);
     Set_HLLeg(45);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FLLeg(90);
     Set_HRLeg(90);
     CreateDelayTask(3,MoveSpeed);
     while(Is_DelayDone(3) != delayFinish);
+    Def_TaskState(3);
     Set_FRLeg(90);
     Set_HLLeg(90);
 }
@@ -212,14 +252,17 @@ void Action_TurnLeft(void)
     Set_HLLeg(135);
     CreateDelayTask(4,MoveSpeed);
     while(Is_DelayDone(4) != delayFinish);
+    Def_TaskState(4);
     Set_FLLeg(45);
     Set_HRLeg(135);
     CreateDelayTask(4,MoveSpeed);
     while(Is_DelayDone(4) != delayFinish);
+    Def_TaskState(4);
     Set_FRLeg(90);
     Set_HLLeg(90);
     CreateDelayTask(4,MoveSpeed);
     while(Is_DelayDone(4) != delayFinish);
+    Def_TaskState(4);
     Set_FLLeg(90);
     Set_HRLeg(90);
 }
@@ -235,14 +278,17 @@ void Action_TurnRight(void)
     Set_HRLeg(135);
     CreateDelayTask(4,MoveSpeed);
     while(Is_DelayDone(4) != delayFinish);
+    Def_TaskState(4);
     Set_FRLeg(45);
     Set_HLLeg(135);
     CreateDelayTask(4,MoveSpeed);
     while(Is_DelayDone(4) != delayFinish);
+    Def_TaskState(4);
     Set_FLLeg(90);
     Set_HRLeg(90);
     CreateDelayTask(4,MoveSpeed);
     while(Is_DelayDone(4) != delayFinish);
+    Def_TaskState(4);
     Set_FRLeg(90);
     Set_HLLeg(90);
 }
@@ -260,18 +306,20 @@ void Action_Swing(void)
         Set_FLLeg(i);
         Set_HLLeg(i);
         Set_HRLeg(i);
-        CreateDelayTask(5,MoveSpeed);
+        CreateDelayTask(5,6);
         while(Is_DelayDone(5) != delayFinish);
+        Def_TaskState(5);
     }
 
-    for(uint8_t i = 150; i < 30 ;i --)
+    for(uint8_t i = 150; i > 30 ;i --)
     {
         Set_FRLeg(i);
         Set_FLLeg(i);
         Set_HLLeg(i);
         Set_HRLeg(i);
-        CreateDelayTask(5,MoveSpeed);
+        CreateDelayTask(5,6);
         while(Is_DelayDone(5) != delayFinish);
+        Def_TaskState(5);
     }
 }
 
@@ -282,24 +330,34 @@ void Action_Swing(void)
 void Action_TailWag(void)
 {
     HelloFlag = NotInHello;
-    CreateDelayTask(6,150);
-    while(Is_DelayDone(6) != delayFinish);
+    CreateDelayTask(13,150);
+    while(Is_DelayDone(13) != delayFinish);
+    Def_TaskState(13);
     for(uint8_t i = 30; i < 150;i ++)
     {
         Set_Tail(i);
-        CreateDelayTask(6,MoveSpeed);
+        CreateDelayTask(6,6);
         while(Is_DelayDone(6) != delayFinish);
+        Def_TaskState(6);
+        if(WagFlag == Wag_Off)
+        {
+           return;
+        }
     }
 
-    for(uint8_t i = 150; i < 30 ;i --)
+    for(uint8_t i = 150; i > 30 ;i --)
     {
         Set_Tail(i);
-        CreateDelayTask(6,MoveSpeed);
+        CreateDelayTask(6,6);
         while(Is_DelayDone(6) != delayFinish);
+        Def_TaskState(6);
+        if(WagFlag == Wag_Off)
+        {
+            return;
+        }
     }
 }
 
-JumpLeg JumpForward = Leg_State_2;//向前跳是否需要交换腿
 /**
  * @brief 向前跳
  * 
@@ -307,17 +365,20 @@ JumpLeg JumpForward = Leg_State_2;//向前跳是否需要交换腿
 void Action_JumpForward(void)
 {
     HelloFlag = NotInHello;
-    if(JumpForward == Leg_State_2)
+    static uint8_t In_Times = 1;
+    if(JumpForward_F == Leg_State_1)
     {
         Set_FLLeg(140);
         Set_HRLeg(35);
         CreateDelayTask(7,MoveSpeed);
         while(Is_DelayDone(7) != delayFinish);
+        Def_TaskState(7);
         Set_FRLeg(140);
         Set_HLLeg(35);
         CreateDelayTask(8,MoveSpeed + 80);
         while(Is_DelayDone(8) != delayFinish);
-        JumpForward = Leg_State_1;
+        Def_TaskState(8);
+        JumpForward_F = Leg_State_2;
     }
     else
     {
@@ -325,15 +386,32 @@ void Action_JumpForward(void)
         Set_HLLeg(35);
         CreateDelayTask(7,MoveSpeed);
         while(Is_DelayDone(7) != delayFinish);
+        Def_TaskState(7);
         Set_FLLeg(140);
         Set_HRLeg(35);
         CreateDelayTask(8,MoveSpeed + 80);
         while(Is_DelayDone(8) != delayFinish);
-        JumpForward = Leg_State_2;
+        Def_TaskState(8);
+        JumpForward_F = Leg_State_1;
+        In_Times = 2;
+    }
+    Set_HLLeg(90);
+    Set_HRLeg(90);
+    CreateDelayTask(12,150);
+    while(Is_DelayDone(12) != delayFinish);
+    Def_TaskState(12);
+    Set_FLLeg(90);
+    Set_FRLeg(90);
+    if(In_Times == 2)
+    {
+        In_Times = 1;
+        for(uint8_t i = 0;i < 3;i ++)
+        {
+            RxDataPack[i] = Inst_StandUp[i];
+        }
     }
 }
 
-JumpLeg JumpBackward = Leg_State_2;//向后跳是否需要交换腿
 /**
  * @brief 向后跳
  * 
@@ -341,17 +419,20 @@ JumpLeg JumpBackward = Leg_State_2;//向后跳是否需要交换腿
 void Action_JumpBackward(void)
 {
     HelloFlag = NotInHello;
-    if(JumpBackward == Leg_State_2)
+    static uint8_t In_Times = 1;
+    if(JumpBackward_F == Leg_State_1)
     {   
         Set_HRLeg(35);
         Set_FLLeg(140);
         CreateDelayTask(9,MoveSpeed);
         while(Is_DelayDone(9) != delayFinish);
+        Def_TaskState(9);
         Set_HLLeg(35);
         Set_FRLeg(140);
         CreateDelayTask(9,MoveSpeed);
         while(Is_DelayDone(9) != delayFinish);
-        JumpBackward = Leg_State_1;
+        Def_TaskState(9);
+        JumpBackward_F = Leg_State_2;
     }
     else
     {
@@ -359,11 +440,29 @@ void Action_JumpBackward(void)
         Set_FRLeg(140);
         CreateDelayTask(9,MoveSpeed);
         while(Is_DelayDone(9) != delayFinish);
+        Def_TaskState(9);
         Set_HRLeg(35);
         Set_FLLeg(140);
         CreateDelayTask(9,MoveSpeed);
         while(Is_DelayDone(9) != delayFinish);
-        JumpBackward = Leg_State_2;
+        Def_TaskState(9);
+        JumpBackward_F = Leg_State_1;
+        In_Times = 2;
+    }
+    Set_HLLeg(90);
+    Set_HRLeg(90);
+    CreateDelayTask(12,150);
+    while(Is_DelayDone(12) != delayFinish);
+    Def_TaskState(12);
+    Set_FLLeg(90);
+    Set_FRLeg(90);
+    if(In_Times == 2)
+    {
+        In_Times = 1;
+        for(uint8_t i = 0;i < 3;i ++)
+        {
+            RxDataPack[i] = Inst_StandUp[i];
+        }
     }
 }
 
@@ -379,19 +478,22 @@ void Action_SayHello(void)
         Set_HRLeg(45);
         CreateDelayTask(10,150);
         while(Is_DelayDone(10) != delayFinish);
+        Def_TaskState(10);
         Set_FRLeg(90);
         HelloFlag = InHello;
     }
     for(int i = 0;i < 45;i ++)
     {
         Set_FLLeg(i);
-        CreateDelayTask(11,6);
+        CreateDelayTask(11,10);
         while(Is_DelayDone(11) != delayFinish);
+        Def_TaskState(11);
     }
     for(int i = 45;i > 0;i --)
     {
         Set_FLLeg(i);
-        CreateDelayTask(11,6);
+        CreateDelayTask(11,10);
         while(Is_DelayDone(11) != delayFinish);
+        Def_TaskState(11);
     }
 }

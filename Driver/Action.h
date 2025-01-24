@@ -3,8 +3,9 @@
 
 #include "stm32f10x.h"
 #include "Servo.h"
+#include "Serial.h"
 
-#define MaxDelayTasks   12
+#define MaxDelayTasks   14
 
 typedef enum
 {
@@ -30,12 +31,6 @@ typedef enum
     NotInHello
 }HelloState;//是否在hello中
 
-typedef enum
-{
-    Wag_On,
-    Wag_Off
-}WagState;
-
 typedef struct
 {
     uint16_t StartTime;//延时任务开始时间
@@ -44,13 +39,11 @@ typedef struct
 }DelayTask;//延时任务结构体
 
 
-extern uint32_t System_Tick;//当前系统时间
+extern __IO uint32_t System_Tick;//当前系统时间
 extern DelayTask delay[];//延时任务数组
 extern uint16_t MoveSpeed;//运动延时
-extern WagState WagFlag;//摇尾巴标志位
 
-
-
+void Clear_AllTask(void);
 void CreateDelayTask(uint8_t TaskIndex,uint16_t xms);
 void Def_TaskState(uint8_t Index);
 void Action_Init(void);

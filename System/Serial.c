@@ -5,11 +5,11 @@ USART3 ---> BlueTooth(GPIOB)
  */
 #include "Serial.h"
 
-Inst ActMode = WakeUp;//动作模式状态
-
 Receive_Flag Serial_RxFlag = NotFinish;//串口模块是否接收完成
 
 Serial_State Receive_State = State_Wait_Head;//串口接收的状态
+
+WagState WagFlag = Wag_Off;//摇尾巴标志位
 
 ErrorType ErrorFlag = notError;//串口接收出错标志位
 Timeout TimeOut_Flag = NotOverTime;//超时标志位
@@ -82,8 +82,8 @@ void Voice_Init(void)
     NVIC_InitTypeDef NVIC_Voice_Init_Struct;
     NVIC_Voice_Init_Struct.NVIC_IRQChannel = USART1_IRQn;
     NVIC_Voice_Init_Struct.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Voice_Init_Struct.NVIC_IRQChannelPreemptionPriority = 1;
-    NVIC_Voice_Init_Struct.NVIC_IRQChannelSubPriority = 1;
+    NVIC_Voice_Init_Struct.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_Voice_Init_Struct.NVIC_IRQChannelSubPriority = 2;
     NVIC_Init(&NVIC_Voice_Init_Struct);
 
     USART_Cmd(USART1,ENABLE);
@@ -123,8 +123,8 @@ void BlueTooth_Init(void)
     NVIC_InitTypeDef NVIC_BlueTooth_Init_Struct;
     NVIC_BlueTooth_Init_Struct.NVIC_IRQChannel = USART3_IRQn;
     NVIC_BlueTooth_Init_Struct.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_BlueTooth_Init_Struct.NVIC_IRQChannelPreemptionPriority = 2;
-    NVIC_BlueTooth_Init_Struct.NVIC_IRQChannelSubPriority = 1;
+    NVIC_BlueTooth_Init_Struct.NVIC_IRQChannelPreemptionPriority = 3;
+    NVIC_BlueTooth_Init_Struct.NVIC_IRQChannelSubPriority = 2;
     NVIC_Init(&NVIC_BlueTooth_Init_Struct);
 
     USART_Cmd(USART3,ENABLE);
@@ -161,6 +161,10 @@ void USART1_IRQHandler(void)
                 if( ++Voice_pRxData == 3)
                 {
                     Voice_pRxData = 0;
+                    if(RxDataPack[0] == Inst_TailWag[0] && RxDataPack[1] == Inst_TailWag[1] && RxDataPack[2] == Inst_TailWag[2])
+                    {
+                        (WagFlag == Wag_On)?(WagFlag =Wag_Off):(WagFlag = Wag_On);
+                    }
                     Receive_State = State_Waite_End;
                 }
             break;
@@ -218,6 +222,10 @@ void USART3_IRQHandler(void)
                 if( ++BlueTooth_pRxData == 3)
                 {
                     BlueTooth_pRxData = 0;
+                    if(RxDataPack[0] == Inst_TailWag[0] && RxDataPack[1] == Inst_TailWag[1] && RxDataPack[2] == Inst_TailWag[2])
+                    {
+                        (WagFlag == Wag_On)?(WagFlag =Wag_Off):(WagFlag = Wag_On);
+                    }
                     Receive_State = State_Waite_End;
                 }
             break;

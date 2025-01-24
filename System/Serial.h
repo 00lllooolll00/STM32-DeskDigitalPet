@@ -10,6 +10,12 @@
 
 #define Instr_Num           17
 
+typedef enum
+{
+    Wag_Off,
+    Wag_On
+}WagState;//摇尾巴标志
+
 typedef enum 
 {
     State_Wait_Head,
@@ -64,6 +70,10 @@ extern const uint8_t Inst_SleepDown[];//主动进入睡眠模式
 extern const uint8_t Inst_SpeedMax[];//速度最大
 extern const uint8_t Inst_SpeedMin[];//速度最小
 
+extern const uint8_t Inst_StandUp[];//立正指令
+extern const uint8_t Inst_TailWag[];//摇尾巴指令
+
+extern WagState WagFlag;//摇尾巴标志位
 extern ErrorType ErrorFlag;//串口接收出错标志位
 extern Timeout TimeOut_Flag;//超时标志位
 

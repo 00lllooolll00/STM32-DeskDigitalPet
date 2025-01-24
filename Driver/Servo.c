@@ -7,11 +7,6 @@
 void Servo_Init(void)
 {
     PWM_Init();
-    Set_FLLeg(0);
-    Set_FRLeg(0);
-    Set_HLLeg(0);
-    Set_HRLeg(0);
-    Set_Tail(0);
 }
 
 /**
