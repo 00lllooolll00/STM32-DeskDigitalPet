@@ -95,10 +95,7 @@ void Action_StandUp(void)
 
     if(WagFlag == Wag_On)
     {
-        for(uint8_t i = 0;i < 3;i ++)
-        {
-            RxDataPack[i] = Inst_TailWag[i];
-        }
+        Action_TailWag();
     }
 }
 
@@ -119,10 +116,7 @@ void Action_SitDown(void)
 
     if(WagFlag == Wag_On)
     {
-        for(uint8_t i = 0;i < 3;i ++)
-        {
-            RxDataPack[i] = Inst_TailWag[i];
-        }
+        Action_TailWag();
     }
 
 }
@@ -144,10 +138,7 @@ void Action_LieDown(void)
 
     if(WagFlag == Wag_On)
     {
-        for(uint8_t i = 0;i < 3;i ++)
-        {
-            RxDataPack[i] = Inst_TailWag[i];
-        }
+        Action_TailWag();
     }
 }
 
@@ -312,24 +303,24 @@ void Action_TailWag(void)
     while(Is_DelayDone(13) != delayFinish);
     for(uint8_t i = 30; i < 150;i ++)
     {
-        Set_Tail(i);
-        CreateDelayTask(6,6);
-        while(Is_DelayDone(6) != delayFinish);
         if(WagFlag == Wag_Off)
         {
            break;
         }
+        Set_Tail(i);
+        CreateDelayTask(6,6);
+        while(Is_DelayDone(6) != delayFinish);
     }
 
     for(uint8_t i = 150; i > 30 ;i --)
     {
-        Set_Tail(i);
-        CreateDelayTask(6,6);
-        while(Is_DelayDone(6) != delayFinish);
         if(WagFlag == Wag_Off)
         {
             break;
         }
+        Set_Tail(i);
+        CreateDelayTask(6,6);
+        while(Is_DelayDone(6) != delayFinish);
     }
 }
 

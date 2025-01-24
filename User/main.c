@@ -30,8 +30,13 @@ void Led_Init(void)
 void ActionConfig(void)
 {
 	static Inst NowState = Sleep;
+	static Inst LastState;
 	if(Serial_RxFlag == Finish || Change_Flag == Proactive_Change)
 	{
+		if(NowState != SpeedDown && NowState != SpeedUp && NowState != TailWag)
+		{
+			LastState = NowState;
+		}
 		NowState = Def_ActMode();
 		Clear_AllTask();
 		Change_Flag = nProactive_Change;
@@ -40,15 +45,18 @@ void ActionConfig(void)
 	switch(NowState)
 		{
 			case TailWag:
+				(WagFlag == Wag_On)?(WagFlag = Wag_Off):(WagFlag = Wag_On);
 				if(WagFlag == Wag_On)
 				{
 					GPIO_ResetBits(GPIOC,GPIO_Pin_13);
+
 				}
 				else
 				{
 					GPIO_SetBits(GPIOC,GPIO_Pin_13);
 				}
 				Action_TailWag();
+				NowState = LastState;
 			break;
 
 			case Forward:
@@ -121,6 +129,7 @@ void ActionConfig(void)
 				{
 					Voice_SendDataPack(Inst_SpeedMax);
 				}
+				NowState = LastState;
 			break;
 
 			case SpeedDown:
@@ -133,6 +142,7 @@ void ActionConfig(void)
 				{
 					Voice_SendDataPack(Inst_SpeedMin);
 				}
+				NowState = LastState;
 			break;
 
 			case SayHello:
