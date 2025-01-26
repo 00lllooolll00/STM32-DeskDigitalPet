@@ -5,7 +5,7 @@
 #include "Servo.h"
 #include "Serial.h"
 
-#define MaxDelayTasks   14
+#define MaxDelayTasks   20
 
 typedef enum
 {

@@ -11,7 +11,7 @@ ProChange Change_Flag = nProactive_Change;//主动进入模式变换标志位
 /**
  * @brief 创建一个延时任务
  * 
- * @param TaskIndex 任务索引 取值范围0——13
+ * @param TaskIndex 任务索引 取值范围0——19
  * @param xms 延时时间(ms)
  */
 void CreateDelayTask(uint8_t TaskIndex,uint16_t xms)
@@ -24,7 +24,7 @@ void CreateDelayTask(uint8_t TaskIndex,uint16_t xms)
 /**
  * @brief 返回当前任务的执行状态
  * 
- * @param Index 延时任务索引 0——13
+ * @param Index 延时任务索引 0——19
  * @return delayStatus 执行状态
  */
 delayStatus Is_DelayDone(uint8_t Index)
@@ -42,7 +42,7 @@ delayStatus Is_DelayDone(uint8_t Index)
 /**
  * @brief 判断当前延时任务是否结束
  * 
- * @param Index 延时任务索引 0——13
+ * @param Index 延时任务索引 0——19
  */
 void Def_TaskState(uint8_t Index)
 {

@@ -3,25 +3,11 @@
 #include "Emoji.h"
 #include "Serial.h"
 #include "TIM.h"
+#include "Ultrasonic.h"
+#include "Led.h"
 
 uint32_t inSleep_Counter = 0;//进入睡眠计数
 uint16_t Error_Counter = 0;//串口超时计数
-
-/**
- * @brief 显示摇尾巴
- * 
- */
-void Led_Init(void)
-{
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
-	GPIO_InitTypeDef LED_Init;
-	LED_Init.GPIO_Mode = GPIO_Mode_Out_PP;
-	LED_Init.GPIO_Pin = GPIO_Pin_13;
-	LED_Init.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOC,&LED_Init);
-
-	GPIO_SetBits(GPIOC,GPIO_Pin_13);
-}
 
 /**
  * @brief 动作配置函数
@@ -48,18 +34,28 @@ void ActionConfig(void)
 				(WagFlag == Wag_On)?(WagFlag = Wag_Off):(WagFlag = Wag_On);
 				if(WagFlag == Wag_On)
 				{
-					GPIO_ResetBits(GPIOC,GPIO_Pin_13);
-
+					Led_On();
 				}
 				else
 				{
-					GPIO_SetBits(GPIOC,GPIO_Pin_13);
+					Led_Off();
 				}
 				Action_TailWag();
 				NowState = LastState;
 			break;
 
 			case Forward:
+				// if(Get_Distance() <= 3)//检测前方3cm是否有障碍物，有则后退
+				// {
+				// 	Emoji_Turn(Emoji_Scared);
+				// 	Action_Backward();
+				// }
+				// else
+				// {
+				// 	Emoji_Turn(Emoji_Normal);
+				// 	Action_Forward();			
+				// }
+								
 				Emoji_Turn(Emoji_Normal);
 				Action_Forward();			
 			break;
@@ -161,6 +157,7 @@ int main(void)
 	Serial_Init();
 	Led_Init();
 	TIM4_Init();
+	// Ultrasonic_Init();
 	Action_Init();
 
 	while(1)

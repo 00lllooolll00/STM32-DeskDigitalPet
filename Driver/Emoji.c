@@ -14,7 +14,6 @@ void Emoji_Init(void)
     OLED_Update();
 }
 
-uint8_t *pEmoji_Buf = Emoji_Cute;//emoji上一次的值
 /**
  * @brief 更换表情
  * 
@@ -23,6 +22,7 @@ uint8_t *pEmoji_Buf = Emoji_Cute;//emoji上一次的值
  */
 void Emoji_Turn(const uint8_t *Emoji)
 {
+    static uint8_t *pEmoji_Buf = Emoji_Normal;//emoji上一次的值
     if(pEmoji_Buf == Emoji)
     {
         return;
