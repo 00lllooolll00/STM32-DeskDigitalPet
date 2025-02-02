@@ -5,6 +5,7 @@
 #include "TIM.h"
 #include "Ultrasonic.h"
 #include "Led.h"
+#include "Delay.h"
 
 uint32_t inSleep_Counter = 0;//进入睡眠计数
 uint16_t Error_Counter = 0;//串口超时计数
@@ -24,7 +25,6 @@ void ActionConfig(void)
 			LastState = NowState;
 		}
 		NowState = Def_ActMode();
-		Clear_AllTask();
 		Change_Flag = nProactive_Change;
 		Serial_RxFlag = NotFinish;
 	}
@@ -116,8 +116,7 @@ void ActionConfig(void)
 			break;
 
 			case SpeedUp:
-				Emoji_Turn(Emoji_Grinning);				
-				if(MoveSpeed >= 100)
+				if(MoveSpeed >= 140)
 				{
 					MoveSpeed -= 20;
 				}
@@ -129,7 +128,6 @@ void ActionConfig(void)
 			break;
 
 			case SpeedDown:
-				Emoji_Turn(Emoji_Grinning);				
 				if(MoveSpeed <= 200)
 				{
 					MoveSpeed += 20;
@@ -157,7 +155,7 @@ int main(void)
 	Serial_Init();
 	Led_Init();
 	TIM4_Init();
-	// Ultrasonic_Init();
+	Ultrasonic_Init();
 	Action_Init();
 
 	while(1)
@@ -169,9 +167,20 @@ int main(void)
 			Emoji_Turn(Emoji_Sleep);//切换表情
 			Action_LieDown();
 			Voice_SendDataPack(Inst_SleepDown);//向语音模块发送数据包告诉进入睡眠模式
+			Delay_ms(2000);
+			OLED_Clear();
+			OLED_Update();
+
 			TIM_Cmd(TIM4,DISABLE);//关闭TIM4避免中断打断睡眠
+			TIM_Cmd(TIM3,DISABLE);
+			TIM_Cmd(TIM2,DISABLE);
+			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM4,DISABLE);//关闭所有时钟
 			__WFI();//进入睡眠模式
+			RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 | RCC_APB1Periph_TIM2 | RCC_APB1Periph_TIM4,ENABLE);//打开所有时钟
 			TIM_Cmd(TIM4,ENABLE);//退出睡眠模式先打开TIM4
+			TIM_Cmd(TIM3,ENABLE);
+			TIM_Cmd(TIM2,ENABLE);
+
 		}
 	}
 }

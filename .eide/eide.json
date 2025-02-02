@@ -1,292 +1,37 @@
 {
-  "name": "DesktopDigitalPet",
+  "name": "STM32_DeskPet",
   "type": "ARM",
   "dependenceList": [],
-  "srcDirs": [],
+  "srcDirs": [
+    "StartUp",
+    "Core",
+    "Lib",
+    "System",
+    "Driver",
+    "User"
+  ],
   "virtualFolder": {
     "name": "<virtual_root>",
     "files": [],
-    "folders": [
-      {
-        "name": "User",
-        "files": [
-          {
-            "path": "User/main.c"
-          }
-        ],
-        "folders": []
-      },
-      {
-        "name": "Driver",
-        "files": [
-          {
-            "path": "Driver/OLED.c"
-          },
-          {
-            "path": "Driver/OLED_Data.c"
-          },
-          {
-            "path": "Driver/Servo.c"
-          },
-          {
-            "path": "Driver/Action.c"
-          },
-          {
-            "path": "Driver/Emoji.c"
-          },
-          {
-            "path": "Driver/Ultrasonic.c"
-          },
-          {
-            "path": "Driver/Led.c"
-          }
-        ],
-        "folders": []
-      },
-      {
-        "name": "System",
-        "files": [
-          {
-            "path": "System/Delay.c"
-          },
-          {
-            "path": "System/Serial.c"
-          },
-          {
-            "path": "System/PWM.c"
-          },
-          {
-            "path": "System/TIM.c"
-          }
-        ],
-        "folders": []
-      },
-      {
-        "name": "Lib",
-        "files": [
-          {
-            "path": "Lib/misc.c"
-          },
-          {
-            "path": "Lib/misc.h"
-          },
-          {
-            "path": "Lib/stm32f10x_adc.c"
-          },
-          {
-            "path": "Lib/stm32f10x_adc.h"
-          },
-          {
-            "path": "Lib/stm32f10x_bkp.c"
-          },
-          {
-            "path": "Lib/stm32f10x_bkp.h"
-          },
-          {
-            "path": "Lib/stm32f10x_can.c"
-          },
-          {
-            "path": "Lib/stm32f10x_can.h"
-          },
-          {
-            "path": "Lib/stm32f10x_cec.c"
-          },
-          {
-            "path": "Lib/stm32f10x_cec.h"
-          },
-          {
-            "path": "Lib/stm32f10x_crc.c"
-          },
-          {
-            "path": "Lib/stm32f10x_crc.h"
-          },
-          {
-            "path": "Lib/stm32f10x_dac.c"
-          },
-          {
-            "path": "Lib/stm32f10x_dac.h"
-          },
-          {
-            "path": "Lib/stm32f10x_dbgmcu.c"
-          },
-          {
-            "path": "Lib/stm32f10x_dbgmcu.h"
-          },
-          {
-            "path": "Lib/stm32f10x_dma.c"
-          },
-          {
-            "path": "Lib/stm32f10x_dma.h"
-          },
-          {
-            "path": "Lib/stm32f10x_exti.c"
-          },
-          {
-            "path": "Lib/stm32f10x_exti.h"
-          },
-          {
-            "path": "Lib/stm32f10x_flash.c"
-          },
-          {
-            "path": "Lib/stm32f10x_flash.h"
-          },
-          {
-            "path": "Lib/stm32f10x_fsmc.c"
-          },
-          {
-            "path": "Lib/stm32f10x_fsmc.h"
-          },
-          {
-            "path": "Lib/stm32f10x_gpio.c"
-          },
-          {
-            "path": "Lib/stm32f10x_gpio.h"
-          },
-          {
-            "path": "Lib/stm32f10x_i2c.c"
-          },
-          {
-            "path": "Lib/stm32f10x_i2c.h"
-          },
-          {
-            "path": "Lib/stm32f10x_iwdg.c"
-          },
-          {
-            "path": "Lib/stm32f10x_iwdg.h"
-          },
-          {
-            "path": "Lib/stm32f10x_pwr.c"
-          },
-          {
-            "path": "Lib/stm32f10x_pwr.h"
-          },
-          {
-            "path": "Lib/stm32f10x_rcc.c"
-          },
-          {
-            "path": "Lib/stm32f10x_rcc.h"
-          },
-          {
-            "path": "Lib/stm32f10x_rtc.c"
-          },
-          {
-            "path": "Lib/stm32f10x_rtc.h"
-          },
-          {
-            "path": "Lib/stm32f10x_sdio.c"
-          },
-          {
-            "path": "Lib/stm32f10x_sdio.h"
-          },
-          {
-            "path": "Lib/stm32f10x_spi.c"
-          },
-          {
-            "path": "Lib/stm32f10x_spi.h"
-          },
-          {
-            "path": "Lib/stm32f10x_tim.c"
-          },
-          {
-            "path": "Lib/stm32f10x_tim.h"
-          },
-          {
-            "path": "Lib/stm32f10x_usart.c"
-          },
-          {
-            "path": "Lib/stm32f10x_usart.h"
-          },
-          {
-            "path": "Lib/stm32f10x_wwdg.c"
-          },
-          {
-            "path": "Lib/stm32f10x_wwdg.h"
-          }
-        ],
-        "folders": []
-      },
-      {
-        "name": "Start",
-        "files": [
-          {
-            "path": "Start/core_cm3.c"
-          },
-          {
-            "path": "Start/core_cm3.h"
-          },
-          {
-            "path": "Start/startup_stm32f10x_md.s"
-          },
-          {
-            "path": "Start/stm32f10x.h"
-          },
-          {
-            "path": "Start/stm32f10x_conf.h"
-          },
-          {
-            "path": "Start/stm32f10x_it.c"
-          },
-          {
-            "path": "Start/stm32f10x_it.h"
-          },
-          {
-            "path": "Start/system_stm32f10x.c"
-          },
-          {
-            "path": "Start/system_stm32f10x.h"
-          }
-        ],
-        "folders": []
-      }
-    ]
+    "folders": []
   },
   "outDir": "build",
   "deviceName": null,
   "packDir": ".pack/Keil/STM32F1xx_DFP.2.4.1",
   "miscInfo": {
-    "uid": "434773acf56501baabdb1cc7606aae85"
+    "uid": "e227ed2065119fca8887e09a0c248217"
   },
   "targets": {
-    "Target 1": {
+    "Debug": {
       "excludeList": [],
       "toolchain": "AC5",
       "compileConfig": {
         "cpuType": "Cortex-M3",
         "floatingPointHardware": "none",
-        "scatterFilePath": "",
         "useCustomScatterFile": false,
+        "scatterFilePath": "<YOUR_SCATTER_FILE>.sct",
         "storageLayout": {
           "RAM": [
-            {
-              "tag": "RAM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
-            {
-              "tag": "RAM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
-            {
-              "tag": "RAM",
-              "id": 3,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
             {
               "tag": "IRAM",
               "id": 1,
@@ -296,68 +41,18 @@
               },
               "isChecked": true,
               "noInit": false
-            },
-            {
-              "tag": "IRAM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
             }
           ],
           "ROM": [
             {
-              "tag": "ROM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
-              "tag": "ROM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
-              "tag": "ROM",
-              "id": 3,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
               "tag": "IROM",
               "id": 1,
               "mem": {
-                "startAddr": "0x8000000",
+                "startAddr": "0x08000000",
                 "size": "0x10000"
               },
               "isChecked": true,
               "isStartup": true
-            },
-            {
-              "tag": "IROM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
             }
           ]
         },
@@ -381,195 +76,6 @@
           "proType": 1,
           "speed": 8000,
           "otherCmds": ""
-        }
-      },
-      "custom_dep": {
-        "name": "default",
-        "incList": [
-          ".",
-          "Start",
-          "User",
-          "Driver",
-          "Lib",
-          "System",
-          ".cmsis/include",
-          "RTE/_Target 1"
-        ],
-        "libList": [],
-        "defineList": [
-          "USE_STDPERIPH_DRIVER",
-          "STM32F10X_MD"
-        ]
-      },
-      "builderOptions": {
-        "AC5": {
-          "version": 4,
-          "beforeBuildTasks": [],
-          "afterBuildTasks": [],
-          "global": {
-            "use-microLIB": true,
-            "output-debug-info": "enable"
-          },
-          "c/cpp-compiler": {
-            "optimization": "level-0",
-            "one-elf-section-per-function": true,
-            "c99-mode": true,
-            "C_FLAGS": "--diag_suppress=1 --diag_suppress=1295",
-            "CXX_FLAGS": "--diag_suppress=1 --diag_suppress=1295",
-            "warnings": "all-warnings",
-            "gnu-extensions": true
-          },
-          "asm-compiler": {},
-          "linker": {
-            "output-format": "elf",
-            "ro-base": "0x08000000",
-            "rw-base": "0x20000000"
-          }
-        }
-      }
-    },
-    "Uasrt_Send": {
-      "excludeList": [
-        "<virtual_root>/System/TIM2.c"
-      ],
-      "toolchain": "AC5",
-      "compileConfig": {
-        "cpuType": "Cortex-M3",
-        "floatingPointHardware": "none",
-        "scatterFilePath": "",
-        "useCustomScatterFile": false,
-        "storageLayout": {
-          "RAM": [
-            {
-              "tag": "RAM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
-            {
-              "tag": "RAM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
-            {
-              "tag": "RAM",
-              "id": 3,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
-            {
-              "tag": "IRAM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x20000000",
-                "size": "0x5000"
-              },
-              "isChecked": true,
-              "noInit": false
-            },
-            {
-              "tag": "IRAM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            }
-          ],
-          "ROM": [
-            {
-              "tag": "ROM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
-              "tag": "ROM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
-              "tag": "ROM",
-              "id": 3,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
-              "tag": "IROM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x8000000",
-                "size": "0x10000"
-              },
-              "isChecked": true,
-              "isStartup": true
-            },
-            {
-              "tag": "IROM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            }
-          ]
-        },
-        "options": "null"
-      },
-      "uploader": "OpenOCD",
-      "uploadConfig": {
-        "bin": "",
-        "target": "stm32f1x",
-        "interface": "stlink",
-        "baseAddr": "0x08000000"
-      },
-      "uploadConfigMap": {
-        "JLink": {
-          "bin": "",
-          "baseAddr": "",
-          "cpuInfo": {
-            "vendor": "null",
-            "cpuName": "null"
-          },
-          "proType": 1,
-          "speed": 8000,
-          "otherCmds": ""
-        },
-        "OpenOCD": {
-          "bin": "",
-          "target": "stm32f1x",
-          "interface": "stlink",
-          "baseAddr": "0x08000000"
         },
         "STLink": {
           "bin": "",
@@ -577,9 +83,9 @@
           "resetMode": "default",
           "runAfterProgram": true,
           "speed": 4000,
-          "address": "0x8000000",
+          "address": "0x08000000",
           "elFile": "None",
-          "optionBytes": ".eide/uasrt_send.st.option.bytes.ini",
+          "optionBytes": ".eide/debug.st.option.bytes.ini",
           "otherCmds": ""
         }
       },
@@ -587,14 +93,11 @@
         "name": "default",
         "incList": [
           ".",
-          "Start",
+          "Lib/Inc",
+          "Driver/Inc",
+          "Core/Inc",
           "User",
-          "Driver",
-          "Lib",
-          "System",
-          ".cmsis/include",
-          "RTE/_Target 1",
-          "RTE/_Uasrt_Send"
+          "System/Inc"
         ],
         "libList": [],
         "defineList": [
@@ -603,6 +106,35 @@
         ]
       },
       "builderOptions": {
+        "GCC": {
+          "version": 5,
+          "beforeBuildTasks": [],
+          "afterBuildTasks": [],
+          "global": {
+            "$float-abi-type": "softfp",
+            "output-debug-info": "enable",
+            "misc-control": "--specs=nosys.specs --specs=nano.specs"
+          },
+          "c/cpp-compiler": {
+            "language-c": "c11",
+            "language-cpp": "c++11",
+            "optimization": "level-debug",
+            "warnings": "all-warnings",
+            "one-elf-section-per-function": true,
+            "one-elf-section-per-data": true,
+            "C_FLAGS": "",
+            "CXX_FLAGS": ""
+          },
+          "asm-compiler": {
+            "ASM_FLAGS": ""
+          },
+          "linker": {
+            "output-format": "elf",
+            "remove-unused-input-sections": true,
+            "LD_FLAGS": "",
+            "LIB_FLAGS": "-lm"
+          }
+        },
         "AC5": {
           "version": 4,
           "beforeBuildTasks": [],
@@ -617,14 +149,11 @@
             "c99-mode": true,
             "C_FLAGS": "--no-multibyte-chars",
             "CXX_FLAGS": "--no-multibyte-chars",
-            "warnings": "all-warnings",
-            "gnu-extensions": true
+            "warnings": "unspecified"
           },
           "asm-compiler": {},
           "linker": {
-            "output-format": "elf",
-            "ro-base": "0x08000000",
-            "rw-base": "0x20000000"
+            "output-format": "elf"
           }
         }
       }
